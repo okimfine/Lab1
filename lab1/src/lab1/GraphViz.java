@@ -12,7 +12,7 @@ public class GraphViz
 /**
     * Where is your dot program located? It will be called externally.
     */
-   private static String DOT = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe"; // Windows
+   private static String DOT = "C:\\Program Files (x86)\\Graphviz2.38\\bin\\dot.exe"; // Windows test
 
 /**
     * The source of the graph written in dot language.
