@@ -11,7 +11,7 @@ public class labone {
 	public static int[][] matrix = new int[200][200]; //有向图的邻接矩阵
 	public static String test; //输入的测试字符串
 	public static int[] visited = new int[200];//求最短路径标记数组（函数复用）
-	public static int[] path = new int[200];//求最短路径记录数组（函数复用） test
+	public static int[] path = new int[200];//求最短路径记录数组（函数复用） 
 
 /*
  * 功能：将文件内容转化为待处理字符串
