@@ -361,44 +361,92 @@ public class labone {
     * 功能：求两个单词间的最短路径
     * 参数word1&word2：所要求的单词
     * */
-   public static String calcShortestPath(String word1, String word2){
+   public static String calcShortestPath(String text,String word1, String word2){
 
 	   int p1 , p2 , i , j ,k;
+	   String NewText = new String();
 	   p1 = 0;
 	   p2 = 0;
-	   v = VerCreate(test);
-	   Arrays.sort(v);
-	   p1 = Arrays.binarySearch(v, word1);
-	   p2 = Arrays.binarySearch(v, word2);
+	   String[] ver = VerCreate(text);
+	   String[][] e = EdgesCreate(text);//边集集合
+	   String[][] EdgeWeight = EdgeWeight(e);//计算边的权值
+	   Arrays.sort(ver);
+	   int[][] Matrix = Matrix(EdgeWeight,ver);//邻接矩阵
+	   
+	   p1 = Arrays.binarySearch(ver, word1);
+	   p2 = Arrays.binarySearch(ver, word2);
 	   if(p1 < 0 | p2 < 0){
-		   System.out.println("请输入正确的单词！");
-		   return "";
+		   NewText = "请输入正确的单词！";
+		   return NewText;
 	   }
-        Dijkstra(p1);
-        String NewText = new String();
+
+	   int n = Matrix.length;
+	   path = new int[n];
+	   visited = new int[n];
+	   int[] weight = new int[n];
+	   
+	   for(i = 0;i < n; i++)
+		   weight[i] = Matrix[p1][i];
+	   
+		for (i = 0; i < n; i++) {
+			if (weight[i] < Integer.MAX_VALUE) {
+				path[i] = p1;
+			}
+		}
+		
+		for (i = 0; i < n; i++)
+			visited[i] = 0;
+		
+		visited[p1] = 1;		
+		weight[p1] = 0;
+		
+		for (i = 0; i < n; i++) {
+			int min = Integer.MAX_VALUE;
+			k = p1;
+			for (j = 0; j < n; j++) {
+				if (visited[j] == 0 && weight[j] < min) {
+					min = weight[j];
+					k = j;
+				}
+			}
+			visited[k] = 1; //将顶点k加入
+			for (j = 0; j < n; j++) { //以顶点k为中间值计算新的权值
+				if (visited[j] == 0 && Matrix[k][j] != Integer.MAX_VALUE && weight[k] + Matrix[k][j] < weight[j]) {
+					weight[j] = weight[k] + Matrix[k][j];
+					path[j] = k;
+				}
+			}
+		}
+		
+        
 		i = p2;		
-		String[] str = new String[matrix.length];
+		String[] str = new String[Matrix.length];
 		j = 0;
+		int l = 0;
 		if (i == p1) {
-			System.out.println("请输入两个不同的单词，感谢！");
+			NewText = "请输入两个不同的单词，感谢！";
+			return NewText;
 		} else if (visited[i] == 0) {
-			NewText = v[p1] + " 和 " + v[i] + " 不可达！";
-			System.out.println(NewText);
+			NewText = ver[p1] + " 和 " + ver[i] + " 不可达！";
+			return NewText;			
 		} else {
 			k = i;
 			while (k != p1) {
-				str[j] = v[k];
+				str[j] = ver[k];
 				j++;
 				k = path[k];
 			}
-			str[j] = v[k];
-			System.out.print(v[p1] + "和" + v[i] + "最短路径为:\n");
+			str[j] = ver[k];
+			l = j;
+			NewText += ver[p1] + "和" + ver[i] + "最短路径为:\n";
 			while (j != 0) {
 				NewText += str[j] + "->";
 				j--;
 			}
-			NewText += str[0] + "!";
+			NewText += str[0] ;
 		}
+		NewText += " 路径长度为  ";
+		NewText += l;
 		return NewText;
 	   	   
    }
@@ -415,10 +463,9 @@ public class labone {
 		   p1 = Arrays.binarySearch(v, word);
 		   if(p1 < 0){
 			   System.out.println("请输入正确的单词！");
-			   return;
 		   }
 	        Dijkstra(p1);
-	        
+	       int l = 0; 
            int n = matrix.length;
 		   for (i = 0; i < n; i++) {
 			   String[] str = new String[n];
@@ -435,12 +482,14 @@ public class labone {
 					   k = path[k];
 				   }
 				   str[j] = v[k];
+				   l = j;
 				   System.out.print(v[p1] + "和" + v[i] + "的最短路径为：\n");
 				   while (j != 0) {
 					   System.out.print(str[j] + "->");
 					   j--;
 				   }
-				   System.out.println(str[0] + " !");
+				   System.out.println(str[0]);
+				   System.out.print("路径长度" + l);
 			   }
 		}
 		   return;
@@ -529,13 +578,15 @@ public class labone {
 	   //导入文本
 	   while(true){
 		   System.out.println("请先导入文本！");
+		   /*
 		   String loc = new String();
 		   String name = new String();
 		   System.out.println("请输入文件地址：");
 		   loc = tmp.nextLine();
 		   System.out.println("请输入文件名称：");
 		   name = tmp.nextLine();
-		   test = InputFile(loc,name);
+		   */
+		   test = InputFile("C://test","T3.txt");
 		   if(test.equals("") != true){
 			   System.out.println("文件导入成功！");	
 			   break;
@@ -561,20 +612,19 @@ public class labone {
 		   System.out.println("====================");
 		   System.out.println("请输入功能序号：");
 		   
-		   int num = tmp.nextInt();	
+		   String num = tmp.nextLine();	
 		   switch(num){
-		   case 1:
+		   case "1":
 			   System.out.println("欢迎使用生成图像功能！");
 			   showDirectedGraph(edgeweight);
 			   System.out.println("图像生成成功！");
 			   break;
 			   
-		   case 2:
+		   case "2":
 			   System.out.println("欢迎使用查询桥接词功能！");
 			   System.out.println("请输入需要查询桥接词的两个单词(两个单词之间用换行符分隔）：");
 			   String begin = new String();
 			   String end = new String();
-			   tmp.nextLine();
 			   begin = tmp.nextLine();
 			   end = tmp.nextLine();
 			   String[] words = test.split(" ");
@@ -602,11 +652,10 @@ public class labone {
 			   } 
 			   break;
 			   
-		   case 3:
+		   case "3":
 			   System.out.println("欢迎使用生成新句子功能！");
 			   System.out.println("请输入文本：");
 			   String sentence = new String();
-			   tmp.nextLine();
 			   sentence = tmp.nextLine();
 			   String[] newword = test.split(" ");
 			   BridgeCreate(newword);
@@ -615,34 +664,30 @@ public class labone {
 			   System.out.println(NewText);
 			   break;
 			   
-		   case 4:
+		   case "4":
 			   System.out.println("欢迎使用查询最短路径（两个单词）功能！");
 			   System.out.println("请输入需要查询的单词：");
 			   String word1 = new String();
 			   String word2 = new String();
-			   tmp.nextLine();//消除回车换行
 			   word1 = tmp.nextLine();
 			   word2 = tmp.nextLine();				   
 			   String res = new String();
-			   res = calcShortestPath(word1,word2);
+			   res = calcShortestPath(test,word1,word2);
 			   System.out.println(res);
 			   break;
 
-		   case 5:
+		   case "5":
 			   System.out.println("欢迎使用查询最短路径（一个单词）功能！");
 			   System.out.println("请输入需要查询的单词：");
-			   tmp.nextLine(); //消除回车换行
 			   String word = new String();
 			   word = tmp.nextLine();
 			   calcShortestPathOne(word);
 			   break;
 			   
-		   case 6:
+		   case "6":
 			   System.out.println("欢迎使用随机游走功能！");
-			   System.out.println("请1继续随机游走！输入其他结束随机游走");
-			   
+			   System.out.println("请1继续随机游走！输入其他结束随机游走");			   
 			   String tp2 = new String();
-			   tmp.nextLine();
 			   while (tmp.nextInt() == 1) {
 					tp2 += randomWalk();
 					tp2 += "\t\n";
@@ -650,7 +695,7 @@ public class labone {
 			   }			   
 			   break;
 			   
-		   case 0:
+		   case "0":
 			   System.out.println("感谢使用，再见！");
 			   System.exit(0);
 			   break;
